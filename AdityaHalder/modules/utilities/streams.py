@@ -74,7 +74,7 @@ async def run_stream(file, type):
         
     elif type == "Video":
         audio_stream = AudioStream(
-            input_mode=InputMode.Shell,
+            input_mode="pipe",
             path=f"ffmpeg -i {file} -f s16le -ac 2 -ar 48k pipe:1",
             parameters=AudioParameters(
                 bitrate=48000,
@@ -82,7 +82,7 @@ async def run_stream(file, type):
             ),
         )
         video_stream = VideoStream(
-            input_mode=InputMode.Shell,
+            input_mode="pipe"
             path=f"ffmpeg -i {file} -f rawvideo -r 30 -pix_fmt yuv420p -vf scale=1280:720 pipe:1",
             parameters=VideoParameters(
                 width=1280,
