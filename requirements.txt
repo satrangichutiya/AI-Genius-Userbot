@@ -7,4 +7,4 @@ youtube-search-python
 yt-dlp==2023.12.30
 motor==3.1.2
 pymongo==4.3.3
-ntgcalls==1.2.1
+ntgcalls==2.0.2
