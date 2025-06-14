@@ -63,7 +63,7 @@ async def get_stream(link, type):
 async def run_stream(file, type):
     if type == "Audio":
         audio_stream = AudioStream(
-            input_mode=InputMode.Shell,
+            input_mode="pipe",
             path=f"ffmpeg -i {file} -f s16le -ac 2 -ar 48k pipe:1",
             parameters=AudioParameters(
                 bitrate=48000,
