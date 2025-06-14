@@ -1,7 +1,7 @@
 asyncio==3.4.3
 pyrogram==2.0.106
 python-dotenv==1.0.1
-py-tgcalls==2.2.2
+pytgcalls @ git+https://github.com/pytgcalls/pytgcalls
 tgcrypto==1.2.5
 youtube-search-python
 yt-dlp==2023.12.30
