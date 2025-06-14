@@ -7,7 +7,7 @@ from ..clients.clients import call
 from ...console import USERBOT_PICTURE
 
 from asyncio.queues import QueueEmpty
-from pytgcalls.types.input_stream.input import AudioPiped
+from pytgcalls.types.input_stream import AudioPiped
 from pytgcalls.types.input_stream.quality import HighQualityAudio
 from youtubesearchpython.__future__ import VideosSearch
 
