@@ -1,28 +1,14 @@
-from pytgcalls.types import Update
+from pyrogram.types import Message
+from ...clients.clients import call
+from .streams import run_stream, get_result, get_stream
 
-from . import queues
-from ..clients.clients import app, call
-from .streams import run_stream, close_stream
+async def run_async_calls(chat_id, query, stream_type="Audio"):
+    url, thumbnail = await get_result(query)
+    file = await get_stream(url, stream_type)
 
-
-async def run_async_calls():
-    @call.on_left()
-    @call.on_kicked()
-    @call.on_closed_voice_chat()
-    async def stream_services_handler(_, chat_id: int):
-        return await close_stream(chat_id)
-    
-    
-    @call.on_stream_end()
-    async def stream_end_handler(_, update: Update):
-        chat_id = update.chat_id
-        queues.task_done(chat_id)
-        if queues.is_empty(chat_id):
-            return await close_stream(chat_id)
-        check = queues.get(chat_id)
-        file = check["file"]
-        type = check["type"]
-        stream = await run_stream(file, type)
-        return await call.change_stream(chat_id, stream)
-    
-        
+    if stream_type == "Audio":
+        stream = await run_stream(file, "Audio")
+        await call.join_group_call(chat_id, stream)
+    elif stream_type == "Video":
+        audio, video = await run_stream(file, "Video")
+        await call.join_group_call(chat_id, audio, video)
