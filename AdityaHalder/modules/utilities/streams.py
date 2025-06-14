@@ -7,10 +7,8 @@ from ..clients.clients import call
 from ...console import USERBOT_PICTURE
 
 from asyncio.queues import QueueEmpty
-
-from pytgcalls.types.stream.audio_stream import AudioPiped
-from pytgcalls.types.stream.video_stream import VideoPiped
-from pytgcalls.types.stream import AudioParameters, VideoParameters
+from pytgcalls.types.input_stream import AudioPiped, VideoPiped
+from pytgcalls.types.input_stream.parameters import AudioParameters, VideoParameters
 from youtubesearchpython.__future__ import VideosSearch
 
 
@@ -21,15 +19,18 @@ async def run_async(func, *args, **kwargs):
 
 async def get_result(query: str):
     results = VideosSearch(query, limit=1)
-    result = (await results.next())["result"][0]
-    url = result["link"]
-    thumbnail = result.get("thumbnails", [{}])[0].get("url", USERBOT_PICTURE).split("?")[0]
+    for result in (await results.next())["result"]:
+        url = result["link"]
+        try:
+            thumbnail = result["thumbnails"][0]["url"].split("?")[0]
+        except:
+            thumbnail = USERBOT_PICTURE
     return url, thumbnail
 
 
 async def get_stream(link, stream_type):
     ydl_opts = {
-        "format": "bestaudio/best" if stream_type == "Audio" else "(bestvideo[height<=?720][width<=?1280][ext=mp4])+(bestaudio[ext=m4a])",
+        "format": "bestaudio/best" if stream_type == "Audio" else "(bestvideo[height<=720][width<=1280][ext=mp4])+(bestaudio[ext=m4a])",
         "outtmpl": "downloads/%(id)s.%(ext)s",
         "geo_bypass": True,
         "nocheckcertificate": True,
@@ -37,11 +38,13 @@ async def get_stream(link, stream_type):
         "no_warnings": True,
     }
 
-    ydl = yt_dlp.YoutubeDL(ydl_opts)
-    info = ydl.extract_info(link, download=False)
+    x = yt_dlp.YoutubeDL(ydl_opts)
+    info = x.extract_info(link, False)
     file_path = os.path.join("downloads", f"{info['id']}.{info['ext']}")
-    if not os.path.exists(file_path):
-        await run_async(ydl.download, [link])
+
+    if os.path.exists(file_path):
+        return file_path
+    await run_async(x.download, [link])
     return file_path
 
 
@@ -55,8 +58,7 @@ async def run_stream(file, stream_type):
     )
 
     if stream_type == "Audio":
-        return Stream(audio)
-
+        return audio
     elif stream_type == "Video":
         video = VideoPiped(
             path=file,
@@ -66,7 +68,7 @@ async def run_stream(file, stream_type):
                 frame_rate=30,
             ),
         )
-        return Stream(audio, video)
+        return audio, video
 
 
 async def close_stream(chat_id):
@@ -76,5 +78,5 @@ async def close_stream(chat_id):
         pass
     try:
         return await call.leave_group_call(chat_id)
-    except Exception:
+    except:
         pass
