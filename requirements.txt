@@ -1,9 +1,9 @@
+asyncio==3.4.3
 pyrogram==2.0.106
+python-dotenv==1.0.1
 pytgcalls==0.0.15
 tgcrypto==1.2.5
+youtube-search-python
+yt-dlp==2023.12.30
 motor==3.3.1
 pymongo==4.3.3
-asyncio==3.4.3
-python-dotenv==1.0.1
-yt-dlp==2023.12.30
-youtube-search-python
