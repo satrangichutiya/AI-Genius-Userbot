@@ -1,5 +1,5 @@
 from pyrogram.types import Message
-from ...clients.clients import call
+from AdityaHalder.modules.clients.clients import call
 from .streams import run_stream, get_result, get_stream
 
 async def run_async_calls(chat_id, query, stream_type="Audio"):
