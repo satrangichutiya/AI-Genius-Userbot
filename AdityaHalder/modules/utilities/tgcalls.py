@@ -1,15 +1,25 @@
 from AdityaHalder.modules.clients.clients import call
 from .streams import run_stream, get_result, get_stream
 
+
 async def run_async_calls(chat_id, query, stream_type="Audio"):
-    # Get YouTube URL and thumbnail
-    url, thumbnail = await get_result(query)
+    try:
+        # Search YouTube and get the video URL
+        url, thumbnail = await get_result(query)
 
-    # Download audio/video file
-    file = await get_stream(url, stream_type)
+        if not url:
+            print("❌ No result found for query.")
+            return
 
-    # Prepare AudioPiped stream (video removed for compatibility)
-    stream = await run_stream(file, "Audio")
+        # Download streamable file (audio)
+        file = await get_stream(url, stream_type)
 
-    # Join group call with the audio stream
-    await call.join_group_call(chat_id, stream)
+        # Prepare stream object (AudioPiped)
+        stream = await run_stream(file, stream_type)
+
+        # Join group call
+        await call.join_group_call(chat_id, stream)
+        print(f"✅ Joined VC in {chat_id} with query: {query}")
+
+    except Exception as e:
+        print(f"⚠️ Error in run_async_calls: {e}")
