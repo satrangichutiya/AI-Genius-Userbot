@@ -7,8 +7,8 @@ from ..clients.clients import call
 from ...console import USERBOT_PICTURE
 
 from asyncio.queues import QueueEmpty
-from pytgcalls.types.input_stream import AudioPiped
-from pytgcalls.types.input_stream.parameters import AudioParameters
+from pytgcalls.types.input_stream.input import AudioPiped
+from pytgcalls.types.input_stream.quality import HighQualityAudio
 from youtubesearchpython.__future__ import VideosSearch
 
 
@@ -52,13 +52,10 @@ async def get_stream(link, stream_type):
 
 async def run_stream(file, stream_type):
     audio = AudioPiped(
-        path=file,
-        parameters=AudioParameters(
-            bitrate=48000,
-            channels=2,
-        ),
+        file,
+        HighQualityAudio()
     )
-    return audio  # Only audio supported in pytgcalls 0.0.15
+    return audio  # Only audio is handled in this version
 
 
 async def close_stream(chat_id):
