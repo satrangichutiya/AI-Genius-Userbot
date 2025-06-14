@@ -19,17 +19,16 @@ async def run_async(func, *args, **kwargs):
 
 async def get_result(query: str):
     results = VideosSearch(query, limit=1)
-    for result in (await results.next())["result"]:
+    try:
+        result = (await results.next())["result"][0]
         url = result["link"]
-        try:
-            thumbnail = result["thumbnails"][0]["url"].split("?")[0]
-        except:
-            thumbnail = USERBOT_PICTURE
+        thumbnail = result.get("thumbnails", [{}])[0].get("url", "").split("?")[0] or USERBOT_PICTURE
         return url, thumbnail
-    return None, USERBOT_PICTURE
+    except Exception:
+        return None, USERBOT_PICTURE
 
 
-async def get_stream(link, stream_type):
+async def get_stream(link, stream_type="Audio"):
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": "downloads/%(id)s.%(ext)s",
@@ -50,12 +49,11 @@ async def get_stream(link, stream_type):
     return file_path
 
 
-async def run_stream(file, stream_type):
-    audio = AudioPiped(
+async def run_stream(file, stream_type="Audio"):
+    return AudioPiped(
         file,
         HighQualityAudio()
     )
-    return audio  # Only audio is handled in this version
 
 
 async def close_stream(chat_id):
